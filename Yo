@@ -10990,42 +10990,49 @@ if items["close button"] then
     items["close button"]:Destroy()
 end
 
--- Create a frame to hold the image (makes the whole area clickable)
-items["toggle_circle_frame"] = library:create("Frame", {
+-- Create new circular toggle with your logo
+items["toggle_circle"] = library:create("ImageButton", {
     Parent = library["items"];
-    Name = "ToggleCircleFrame";
-    Position = dim2(0, 20, 1, -20);
+    Name = "ToggleCircle";
+    Position = dim2(0, 20, 1, -20); -- adjust position if needed
     AnchorPoint = vec2(0, 1);
-    Size = dim2(0, 50, 0, 50);
-    BackgroundTransparency = 1; -- fully invisible
+    Size = dim2(0, 50, 0, 50); -- size of the circle
     BorderSizePixel = 0;
-})
-
--- Put the logo inside the frame
-items["toggle_circle"] = library:create("ImageLabel", {
-    Parent = items["toggle_circle_frame"];
-    Name = "ToggleCircleImage";
-    Size = dim2(1, 0, 1, 0);
-    Position = dim2(0, 0, 0, 0);
-    BackgroundTransparency = 1;
+    BackgroundTransparency = 0; -- fully visible background
+    BackgroundColor3 = Color3.fromRGB(25, 25, 29); -- background color of the circle
     Image = "rbxassetid://98106386124295"; -- your logo ID
+    AutoButtonColor = true; -- highlights when hovered
+    ClipsDescendants = true;
 })
 
--- Make the frame draggable
+-- Add a border and rounded edges
+library:create("UICorner", {
+    Parent = items["toggle_circle"];
+    CornerRadius = dim(0, 25); -- fully circular
+})
+
+library:create("UIStroke", {
+    Parent = items["toggle_circle"];
+    Color = Color3.fromRGB(255, 255, 255); -- border color
+    Thickness = 2;
+    ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+})
+
+-- Make the toggle draggable
 local dragging, dragInput, dragStart, startPos
 local function update(input)
     local delta = input.Position - dragStart
-    items["toggle_circle_frame"].Position = UDim2.new(
+    items["toggle_circle"].Position = UDim2.new(
         startPos.X.Scale, startPos.X.Offset + delta.X,
         startPos.Y.Scale, startPos.Y.Offset + delta.Y
     )
 end
 
-items["toggle_circle_frame"].InputBegan:Connect(function(input)
+items["toggle_circle"].InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
-        startPos = items["toggle_circle_frame"].Position
+        startPos = items["toggle_circle"].Position
 
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
@@ -11035,7 +11042,7 @@ items["toggle_circle_frame"].InputBegan:Connect(function(input)
     end
 end)
 
-items["toggle_circle_frame"].InputChanged:Connect(function(input)
+items["toggle_circle"].InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
         dragInput = input
     end
@@ -11049,7 +11056,7 @@ end)
 
 -- Toggle main UI on click
 local open = true
-items["toggle_circle_frame"].MouseButton1Click:Connect(function()
+items["toggle_circle"].MouseButton1Click:Connect(function()
     open = not open
     cfg.toggle_menu(open)
 end)
