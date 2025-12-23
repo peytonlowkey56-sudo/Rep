@@ -124,119 +124,83 @@ StarterGui:SetCore("SendNotification", {
     Button1 = "Yessir"
 })
 
--- ================================
--- Luarmor-safe LPH fallback macros
--- ================================
-if not rawget(_G, "LPH_OBFUSCATED") then
+if LPH_OBFUSCATED == nil then
     local assert = assert
     local type = type
     local setfenv = setfenv
 
-    if not rawget(_G, "LPH_ENCNUM") then
-        function LPH_ENCNUM(n)
-            assert(type(n) == "number")
-            return n
-        end
+    LPH_ENCNUM = function(toEncrypt, ...)
+        assert(type(toEncrypt) == "number" and #{...} == 0)
+        return toEncrypt
     end
 
-    if not rawget(_G, "LPH_ENCSTR") then
-        function LPH_ENCSTR(s)
-            assert(type(s) == "string")
-            return s
-        end
+    LPH_NUMENC = LPH_ENCNUM
+
+    LPH_ENCSTR = function(toEncrypt, ...)
+        assert(type(toEncrypt) == "string" and #{...} == 0)
+        return toEncrypt
     end
 
-    if not rawget(_G, "LPH_ENCFUNC") then
-        function LPH_ENCFUNC(f)
-            assert(type(f) == "function")
-            return f
-        end
+    LPH_STRENC = LPH_ENCSTR
+
+    LPH_ENCFUNC = function(toEncrypt, encKey, decKey, ...)
+        assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0)
+        return toEncrypt
     end
 
-    if not rawget(_G, "LPH_JIT") then
-        function LPH_JIT(f)
-            assert(type(f) == "function")
-            return f
-        end
+    LPH_FUNCENC = LPH_ENCFUNC
+
+    LPH_JIT = function(f, ...)
+        assert(type(f) == "function" and #{...} == 0)
+        return f
     end
 
-    if not rawget(_G, "LPH_NO_VIRTUALIZE") then
-        function LPH_NO_VIRTUALIZE(f)
-            assert(type(f) == "function")
-            return f
-        end
+    LPH_JIT_MAX = LPH_JIT
+
+    LPH_NO_VIRTUALIZE = function(f, ...)
+        assert(type(f) == "function" and #{...} == 0)
+        return f
     end
 
-    if not rawget(_G, "LPH_NO_UPVALUES") then
-        function LPH_NO_UPVALUES(f)
-            assert(type(setfenv) == "function")
-            assert(type(f) == "function")
-            local env = getrenv()
-            return setfenv(
-                function(...)
-                    return f(...)
-                end,
-                setmetatable({}, { __index = env, __newindex = env })
-            )
-        end
+    LPH_NO_UPVALUES = function(f, ...)
+        assert(type(setfenv) == "function")
+        assert(type(f) == "function" and #{...} == 0)
+        local env = getrenv()
+        return setfenv(
+            LPH_NO_VIRTUALIZE(function(...)
+                return func(...)
+            end),
+            setmetatable({func = f}, {__index = env, __newindex = env})
+        )
     end
 
-    if not rawget(_G, "LPH_CRASH") then
-        function LPH_CRASH()
-            game:Shutdown()
-            while true do end
-        end
+    LPH_CRASH = function(...)
+        assert(#{...} == 0)
+        game:Shutdown()
+        while true do end
     end
 end
 
--- ================================
--- Game detection (FIXED)
--- ================================
-local Game_Name = "Universal"
+local Game_Name = (game.PlaceId == 4991214437 and "Town") or (game.PlaceId == 18642421777 and "The Bronx") or (game.PlaceId == 16472538603 and "The Bronx") or (game.PlaceId == 13643807539 and "South Bronx") or (game.PlaceId == 93612682780562 and "South Bronx") or (game.PlaceId == 14413475235 and "South Bronx") or (game.PlaceId == 104715542330896 and "BlockSpin") or (game.PlaceId == 71600459831333 and "Street Life") or "Universal" or game.PlaceId == 13643807539
 
-if game.PlaceId == 4991214437 then
-    Game_Name = "Town"
-elseif game.PlaceId == 18642421777 or game.PlaceId == 16472538603 then
-    Game_Name = "The Bronx"
-elseif game.PlaceId == 13643807539
-    or game.PlaceId == 93612682780562
-    or game.PlaceId == 14413475235 then
-    Game_Name = "South Bronx"
-elseif game.PlaceId == 104715542330896 then
-    Game_Name = "BlockSpin"
-elseif game.PlaceId == 71600459831333 then
-    Game_Name = "Street Life"
-end
-
--- ================================
--- Executor detection
--- ================================
 if not getexecutorname then
     getexecutorname = identifyexecutor
 end
 
-local exec = (getexecutorname and getexecutorname()) or ""
-local Solara =
-    exec:find("Solara")
-    or exec:find("Xeno")
-    or exec:find("Zorara")
+local Solara = string.match(getexecutorname(), "Solara") == "Solara" or string.match(getexecutorname(), "Xeno") == "Xeno" or getexecutorname() == string.match(getexecutorname(), "Zorara") == "Zorara";
 
--- ================================
--- Services wrapper (SAFE)
--- ================================
-local cloneref = cloneref or function(x) return x end
+local cloneref = cloneref or function(...) return ... end
 
 local Services = setmetatable({}, {
     __index = LPH_NO_VIRTUALIZE(function(self, service)
         if Solara and service == "VirtualInputManager" and Game_Name == "The Bronx" then
-            return { SendKeyEvent = function() end }
+            return {SendKeyEvent = function() end}
         end
         return cloneref(game:GetService(service))
     end)
 })
 
 if Game_Name == "South Bronx" and not Solara then
-
          local _getallthreads = LPH_JIT_MAX(function()
             local threads = {}
             for i, v in getreg() do
