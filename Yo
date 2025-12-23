@@ -14133,7 +14133,7 @@ if Game_Name == "The Bronx" then
                         pcall(Teleport, OldCFrame)
 
                         library.notifications:create_notification({
-                            name = "bronx.lol",
+                            name = "villainhub",
                             info = `Successfully safed {state}!`,
                             lifetime = 5
                         })
@@ -14175,7 +14175,7 @@ if Game_Name == "The Bronx" then
                         pcall(Teleport, OldCFrame)
 
                         library.notifications:create_notification({
-                            name = "bronx.lol",
+                            name = "villainhub",
                             info = `Successfully took {state} from safe!`,
                             lifetime = 5
                         })
@@ -14556,7 +14556,7 @@ if Game_Name == "The Bronx" then
                     
                     if not Cleaner then
                         return library.notifications:create_notification({
-                            name = "bronx.lol",
+                            name = "villainhub",
                             info = `Could not find a valid cleaner!`,
                             lifetime = 7.5
                         })
@@ -14620,7 +14620,7 @@ if Game_Name == "The Bronx" then
                     task.spawn(function()
                         if Cooldown then
                             library.notifications:create_notification({
-                                name = "bronx.lol",
+                                name = "villainhub",
                                 info = `Please wait!`,
                                 lifetime = 5
                             })
@@ -14634,7 +14634,7 @@ if Game_Name == "The Bronx" then
 
                         if not Tool then
                             library.notifications:create_notification({
-                                name = "bronx.lol",
+                                name = "villainhub",
                                 info = `Could not find a tool! you must hold one.`,
                                 lifetime = 10
                             })
@@ -14772,7 +14772,7 @@ if Game_Name == "The Bronx" then
                     if Check then
                         DeleteSecretUI()
                         library.notifications:create_notification({
-                            name = "bronx.lol",
+                            name = "villainhub",
                             info = `Could not find items! Please check you have more than 5000$.`,
                             lifetime = 10
                         })
@@ -14885,7 +14885,7 @@ if Game_Name == "The Bronx" then
                         local Prompt = Workspace:FindFirstChild("GUNS")[self]:FindFirstChildWhichIsA("ProximityPrompt",true);
                         if (Workspace:FindFirstChild("GUNS")[self]:FindFirstChild("GamepassID", true) and not MarketplaceService:UserOwnsGamePassAsync(LocalPlayer.UserId, Workspace:FindFirstChild("GUNS")[self]:FindFirstChild("GamepassID",true).Value)) then 
                             return library.notifications:create_notification({
-                                name = "bronx.lol",
+                                name = "villainhub",
                                 info = `You do not own this gamepass!`,
                                 lifetime = 5
                             })
@@ -14896,7 +14896,7 @@ if Game_Name == "The Bronx" then
                         local Part = Prompt.Parent:IsA("Part") and Prompt.Parent.CFrame or Prompt.Parent:IsA("MeshPart") and Prompt.Parent.CFrame or Prompt.Parent:IsA("UnionOperation") and Prompt.Parent.CFrame;
                         if LocalPlayer.stored.Money.Value < Workspace:FindFirstChild("GUNS")[self]:FindFirstChild("Price",true).Value then
                             return library.notifications:create_notification({
-                                name = "bronx.lol",
+                                name = "villainhub",
                                 info = `You are ${Workspace:FindFirstChild("GUNS")[self]:FindFirstChild("Price",true).Value - LocalPlayer.stored.Money.Value} short.`,
                                 lifetime = 5
                             })
@@ -14930,7 +14930,7 @@ if Game_Name == "The Bronx" then
                         task.spawn(Teleport, OldCFrame)
 
                         library.notifications:create_notification({
-                            name = "bronx.lol",
+                            name = "villainhub",
                             info = `Successfully purchased {self}!`,
                             lifetime = 5
                         })
@@ -14958,7 +14958,7 @@ if Game_Name == "The Bronx" then
                         Teleport(Config.TheBronx.TeleportationList[state])
 
                         library.notifications:create_notification({
-                            name = "bronx.lol",
+                            name = "villainhub",
                             info = `Successfully teleported to {state}!`,
                             lifetime = 5
                         })
