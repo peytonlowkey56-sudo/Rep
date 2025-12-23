@@ -124,7 +124,9 @@ StarterGui:SetCore("SendNotification", {
     Button1 = "Yessir"
 })
 
--- Luarmor-safe LPH fallback (NO macro aliasing)
+-- ================================
+-- Luarmor-safe LPH fallback macros
+-- ================================
 if not rawget(_G, "LPH_OBFUSCATED") then
     local assert = assert
     local type = type
@@ -187,20 +189,47 @@ if not rawget(_G, "LPH_OBFUSCATED") then
     end
 end
 
-local Game_Name = (game.PlaceId == 4991214437 and "Town") or (game.PlaceId == 18642421777 and "The Bronx") or (game.PlaceId == 16472538603 and "The Bronx") or (game.PlaceId == 13643807539 and "South Bronx") or (game.PlaceId == 93612682780562 and "South Bronx") or (game.PlaceId == 14413475235 and "South Bronx") or (game.PlaceId == 104715542330896 and "BlockSpin") or (game.PlaceId == 71600459831333 and "Street Life") or "Universal" or game.PlaceId == 13643807539
+-- ================================
+-- Game detection (FIXED)
+-- ================================
+local Game_Name = "Universal"
 
+if game.PlaceId == 4991214437 then
+    Game_Name = "Town"
+elseif game.PlaceId == 18642421777 or game.PlaceId == 16472538603 then
+    Game_Name = "The Bronx"
+elseif game.PlaceId == 13643807539
+    or game.PlaceId == 93612682780562
+    or game.PlaceId == 14413475235 then
+    Game_Name = "South Bronx"
+elseif game.PlaceId == 104715542330896 then
+    Game_Name = "BlockSpin"
+elseif game.PlaceId == 71600459831333 then
+    Game_Name = "Street Life"
+end
+
+-- ================================
+-- Executor detection
+-- ================================
 if not getexecutorname then
     getexecutorname = identifyexecutor
 end
 
-local Solara = string.match(getexecutorname(), "Solara") == "Solara" or string.match(getexecutorname(), "Xeno") == "Xeno" or getexecutorname() == string.match(getexecutorname(), "Zorara") == "Zorara";
+local exec = (getexecutorname and getexecutorname()) or ""
+local Solara =
+    exec:find("Solara")
+    or exec:find("Xeno")
+    or exec:find("Zorara")
 
-local cloneref = cloneref or function(...) return ... end
+-- ================================
+-- Services wrapper (SAFE)
+-- ================================
+local cloneref = cloneref or function(x) return x end
 
 local Services = setmetatable({}, {
     __index = LPH_NO_VIRTUALIZE(function(self, service)
         if Solara and service == "VirtualInputManager" and Game_Name == "The Bronx" then
-            return {SendKeyEvent = function() end}
+            return { SendKeyEvent = function() end }
         end
         return cloneref(game:GetService(service))
     end)
