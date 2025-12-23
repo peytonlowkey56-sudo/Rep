@@ -124,62 +124,67 @@ StarterGui:SetCore("SendNotification", {
     Button1 = "Yessir"
 })
 
--- Luarmor-safe LPH fallback wrappers
+-- Luarmor-safe LPH fallback (NO macro aliasing)
 if not rawget(_G, "LPH_OBFUSCATED") then
     local assert = assert
     local type = type
     local setfenv = setfenv
 
-    -- ONLY define if they do NOT already exist
-    rawset(_G, "LPH_ENCNUM", rawget(_G, "LPH_ENCNUM") or function(n)
-        assert(type(n) == "number")
-        return n
-    end)
+    if not rawget(_G, "LPH_ENCNUM") then
+        function LPH_ENCNUM(n)
+            assert(type(n) == "number")
+            return n
+        end
+    end
 
-    rawset(_G, "LPH_NUMENC", rawget(_G, "LPH_NUMENC") or LPH_ENCNUM)
+    if not rawget(_G, "LPH_ENCSTR") then
+        function LPH_ENCSTR(s)
+            assert(type(s) == "string")
+            return s
+        end
+    end
 
-    rawset(_G, "LPH_ENCSTR", rawget(_G, "LPH_ENCSTR") or function(s)
-        assert(type(s) == "string")
-        return s
-    end)
+    if not rawget(_G, "LPH_ENCFUNC") then
+        function LPH_ENCFUNC(f)
+            assert(type(f) == "function")
+            return f
+        end
+    end
 
-    rawset(_G, "LPH_STRENC", rawget(_G, "LPH_STRENC") or LPH_ENCSTR)
+    if not rawget(_G, "LPH_JIT") then
+        function LPH_JIT(f)
+            assert(type(f) == "function")
+            return f
+        end
+    end
 
-    rawset(_G, "LPH_ENCFUNC", rawget(_G, "LPH_ENCFUNC") or function(f)
-        assert(type(f) == "function")
-        return f
-    end)
+    if not rawget(_G, "LPH_NO_VIRTUALIZE") then
+        function LPH_NO_VIRTUALIZE(f)
+            assert(type(f) == "function")
+            return f
+        end
+    end
 
-    rawset(_G, "LPH_FUNCENC", rawget(_G, "LPH_FUNCENC") or LPH_ENCFUNC)
+    if not rawget(_G, "LPH_NO_UPVALUES") then
+        function LPH_NO_UPVALUES(f)
+            assert(type(setfenv) == "function")
+            assert(type(f) == "function")
+            local env = getrenv()
+            return setfenv(
+                function(...)
+                    return f(...)
+                end,
+                setmetatable({}, { __index = env, __newindex = env })
+            )
+        end
+    end
 
-    rawset(_G, "LPH_JIT", rawget(_G, "LPH_JIT") or function(f)
-        assert(type(f) == "function")
-        return f
-    end)
-
-    rawset(_G, "LPH_JIT_MAX", rawget(_G, "LPH_JIT_MAX") or LPH_JIT)
-
-    rawset(_G, "LPH_NO_VIRTUALIZE", rawget(_G, "LPH_NO_VIRTUALIZE") or function(f)
-        assert(type(f) == "function")
-        return f
-    end)
-
-    rawset(_G, "LPH_NO_UPVALUES", rawget(_G, "LPH_NO_UPVALUES") or function(f)
-        assert(type(setfenv) == "function")
-        assert(type(f) == "function")
-        local env = getrenv()
-        return setfenv(
-            function(...)
-                return f(...)
-            end,
-            setmetatable({}, { __index = env, __newindex = env })
-        )
-    end)
-
-    rawset(_G, "LPH_CRASH", rawget(_G, "LPH_CRASH") or function()
-        game:Shutdown()
-        while true do end
-    end)
+    if not rawget(_G, "LPH_CRASH") then
+        function LPH_CRASH()
+            game:Shutdown()
+            while true do end
+        end
+    end
 end
 
 local Game_Name = (game.PlaceId == 4991214437 and "Town") or (game.PlaceId == 18642421777 and "The Bronx") or (game.PlaceId == 16472538603 and "The Bronx") or (game.PlaceId == 13643807539 and "South Bronx") or (game.PlaceId == 93612682780562 and "South Bronx") or (game.PlaceId == 14413475235 and "South Bronx") or (game.PlaceId == 104715542330896 and "BlockSpin") or (game.PlaceId == 71600459831333 and "Street Life") or "Universal" or game.PlaceId == 13643807539
