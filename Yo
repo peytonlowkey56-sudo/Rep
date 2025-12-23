@@ -124,41 +124,22 @@ StarterGui:SetCore("SendNotification", {
     Button1 = "Yessir"
 })
 
-if-- 🔽 LPH Wrapper for Luarmor 🔽
-if not LPH_OBFUSCATED then
-    -- Numbers
+ifif not LPH_OBFUSCATED then
     LPH_ENCNUM = function(toEncrypt, ...) return toEncrypt end
     LPH_NUMENC = LPH_ENCNUM
-
-    -- Strings
     LPH_ENCSTR = function(toEncrypt, ...) return toEncrypt end
     LPH_STRENC = LPH_ENCSTR
-
-    -- Functions
     LPH_ENCFUNC = function(func, ...) return func end
     LPH_FUNCENC = LPH_ENCFUNC
-
-    -- JIT
     LPH_JIT = function(f, ...) return f end
     LPH_JIT_MAX = LPH_JIT
-
-    -- No virtualize
     LPH_NO_VIRTUALIZE = function(f, ...) return f end
-
-    -- No upvalues
     LPH_NO_UPVALUES = function(f, ...)
         local env = getrenv()
-        return setfenv(
-            LPH_NO_VIRTUALIZE(function(...) return f(...) end),
-            setmetatable({func=f}, {__index=env, __newindex=env})
-        )
+        return setfenv(LPH_NO_VIRTUALIZE(function(...) return f(...) end), setmetatable({func=f}, {__index=env, __newindex=env}))
     end
-
-    -- Crash
     LPH_CRASH = function(...) game:Shutdown() while true do end end
 end
-end
-
 local Game_Name = (game.PlaceId == 4991214437 and "Town") or (game.PlaceId == 18642421777 and "The Bronx") or (game.PlaceId == 16472538603 and "The Bronx") or (game.PlaceId == 13643807539 and "South Bronx") or (game.PlaceId == 93612682780562 and "South Bronx") or (game.PlaceId == 14413475235 and "South Bronx") or (game.PlaceId == 104715542330896 and "BlockSpin") or (game.PlaceId == 71600459831333 and "Street Life") or "Universal" or game.PlaceId == 13643807539
 
 if not getexecutorname then
