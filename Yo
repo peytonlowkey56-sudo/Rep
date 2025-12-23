@@ -124,37 +124,34 @@ StarterGui:SetCore("SendNotification", {
     Button1 = "Yessir"
 })
 
-if LPH_OBFUSCATED == nil then
-    local assert = assert
-    local type = type
-    local setfenv = setfenv
+-- LPH compatibility wrapper (Luarmor safe)
+if not LPH_OBFUSCATED then
+    local env = getrenv()
 
-    LPH_ENCNUM = function(toEncrypt, ...) assert(type(toEncrypt) == "number" and #{...} == 0) return toEncrypt end
+    LPH_ENCNUM = function(v) return v end
     LPH_NUMENC = LPH_ENCNUM
 
-    LPH_ENCSTR = function(toEncrypt, ...) assert(type(toEncrypt) == "string" and #{...} == 0) return toEncrypt end
+    LPH_ENCSTR = function(v) return v end
     LPH_STRENC = LPH_ENCSTR
 
-    LPH_ENCFUNC = function(toEncrypt, encKey, decKey, ...) assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0) return toEncrypt end
+    LPH_ENCFUNC = function(f) return f end
     LPH_FUNCENC = LPH_ENCFUNC
 
-    LPH_JIT = function(f, ...) assert(type(f) == "function" and #{...} == 0) return f end
+    LPH_JIT = function(f) return f end
     LPH_JIT_MAX = LPH_JIT
 
-    LPH_NO_VIRTUALIZE = function(f, ...) assert(type(f) == "function" and #{...} == 0) return f end
+    LPH_NO_VIRTUALIZE = function(f) return f end
 
-    LPH_NO_UPVALUES = function(f, ...)
-        assert(type(setfenv) == "function")
-        assert(type(f) == "function" and #{...} == 0)
-        local env = getrenv()
-        local func = f -- <--- define func
-        return setfenv(
-            LPH_NO_VIRTUALIZE(function(...) return func(...) end),
-            setmetatable({func = f}, {__index=env, __newindex=env})
-        )
+    LPH_NO_UPVALUES = function(f)
+        return setfenv(function(...)
+            return f(...)
+        end, env)
     end
 
-    LPH_CRASH = function(...) assert(#{...} == 0) game:Shutdown() while true do end end
+    LPH_CRASH = function()
+        game:Shutdown()
+        while true do end
+    end
 end
 
 local Game_Name = (game.PlaceId == 4991214437 and "Town") or (game.PlaceId == 18642421777 and "The Bronx") or (game.PlaceId == 16472538603 and "The Bronx") or (game.PlaceId == 13643807539 and "South Bronx") or (game.PlaceId == 93612682780562 and "South Bronx") or (game.PlaceId == 14413475235 and "South Bronx") or (game.PlaceId == 104715542330896 and "BlockSpin") or (game.PlaceId == 71600459831333 and "Street Life") or "Universal" or game.PlaceId == 13643807539
